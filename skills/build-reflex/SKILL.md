@@ -88,6 +88,7 @@ GRAY items also need explicit confirmation, with the failing criterion called ou
 
 ### E. Generate (only approved candidates)
 
+0. **Lint first.** Run `python3 <plugin>/lib/reflex_lint.py <target SKILL.md>` to ensure no two reflexes have identical required-field signatures. The hook routes by "first input_schema match wins"; overlap = silent wrong dispatch. If lint reports OVERLAP, add a `required` discriminator field to one of the conflicting reflexes before generating.
 1. Render `reflex:` YAML from `templates/reflex_block.yaml.tmpl`. Fill every required field; omit unused optionals rather than write `null`.
 2. Render `<reflex_id>.py` from `templates/reflex.py.tmpl` with `CONTRACT` populated and a `run(args)` stub that raises `NotImplementedError`. (Implementation is a follow-up; never silently fake it.)
 3. **Patch the target SKILL.md frontmatter** — insert the `reflex:` block before the closing `---`. Do not touch the body. If frontmatter already has a `reflex:` block, **refuse and ask the user** — do not overwrite.
