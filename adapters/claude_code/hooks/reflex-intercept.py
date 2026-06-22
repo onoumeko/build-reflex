@@ -28,10 +28,9 @@ from glob import glob
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "core"))
-import reflex_common    # noqa: E402
-import reflex_cache     # noqa: E402
-import reflex_drift     # noqa: E402
-import reflex_semantic  # noqa: E402
+import reflex_common  # noqa: E402
+import reflex_cache   # noqa: E402
+import reflex_drift   # noqa: E402
 
 try:
     import yaml
@@ -206,16 +205,9 @@ def main():
         log({"skill": skill, "reflex_id": reflex_id, "status": "drift", "err": drift})
         let_through(reminder=f"reflex {reflex_id} not invoked: {drift}. Regenerate via build-reflex.")
 
-    # 3.5. Semantic preconditions
-    pre_err = reflex_semantic.evaluate(reflex.get("semantic_preconditions"), args)
-    if pre_err:
-        log({"skill": skill, "reflex_id": reflex_id, "status": "semantic_miss", "err": pre_err})
-        let_through(reminder=f"reflex {reflex_id}: {pre_err} — falling back to LLM.")
-
     timeout = int(reflex.get("timeout_seconds") or 10)
     on_failure = reflex.get("on_failure") or "fallback_to_agent"
     determinism = reflex.get("determinism") or "pure"
-    post_process = reflex.get("post_process") or "raw"
 
     # 4. Cache lookup for pure reflexes
     if determinism == "pure":
@@ -223,9 +215,6 @@ def main():
         if cached is not None:
             log({"skill": skill, "reflex_id": reflex_id, "status": "cache_hit",
                  "dur_ms": 0, "saved_tokens": estimate_tokens(cached)})
-            if post_process == "wrap_with_llm":
-                abbr = cached if len(cached) < 2000 else cached[:1000] + f"\n... ({len(cached)} total bytes)"
-                let_through(reminder=f"reflex {reflex_id} returned (cached):\n{abbr}\n\nWrap this in a natural response to the user.")
             intercept(cached)
 
     # 5. Run (with retry_once support)
@@ -244,13 +233,7 @@ def main():
                 reflex_cache.put(reflex_id, args, out.strip())
             log({"skill": skill, "reflex_id": reflex_id, "status": "ok",
                  "dur_ms": dur, "saved_tokens": estimate_tokens(out)})
-            if post_process == "wrap_with_llm":
-                # Let the tool result through as context so the LLM can wrap
-                # the raw reflex output in narrative. Abbreviate long JSON.
-                abbr = out.strip() if len(out) < 2000 else out[:1000] + f"\n... ({len(out)} total bytes)"
-                let_through(reminder=f"reflex {reflex_id} returned:\n{abbr}\n\nWrap this in a natural response to the user.")
-            else:
-                intercept(out.strip())
+            intercept(out.strip())
         except (json.JSONDecodeError, reflex_common.ValidationError) as e:
             code = 2
             err = f"output validation failed: {e}\n{err}"
