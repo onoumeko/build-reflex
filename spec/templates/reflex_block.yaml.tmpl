@@ -23,6 +23,9 @@ reflex:
   timeout_seconds: 10
   determinism: pure            # pure | external_api | impure
   on_failure: fallback_to_agent  # fallback_to_agent | hard_fail | retry_once
+  # post_process: raw          # raw | wrap_with_llm
+                               # raw = stdout becomes tool result, LLM never sees call.
+                               # wrap_with_llm = inject stdout into LLM context for narrative wrapping.
   # side_effects: []
 
   # Optional semantic preconditions — run after schema validation, before script.
