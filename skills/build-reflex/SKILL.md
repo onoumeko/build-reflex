@@ -45,6 +45,22 @@ the skill section is invoked once a month, scripting it saves no real tokens.
 **Skip it**. The five criteria are necessary, not sufficient — frequency ×
 token cost is the actual gate.
 
+## `reflex_index` — progressive disclosure for LLMs
+
+When you generate a reflex, also add a `reflex_index:` list to the target
+SKILL.md frontmatter (under `description`). Each entry is a one-line summary
+of the reflex's I/O contract:
+
+```yaml
+reflex_index:
+  - "count-lines {path} → {lines, bytes}"
+  - "file-hash {path, algo} → {hash, algo, bytes}"
+```
+
+The LLM sees this during the describing phase (before the full SKILL.md body
+is loaded), so it can construct args matching the schema instead of guessing.
+Higher hit rate, fewer schema misses.
+
 ## Workflow when invoked on `<target-skill>`
 
 ### A. Locate
