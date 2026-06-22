@@ -25,6 +25,12 @@ reflex:
   on_failure: fallback_to_agent  # fallback_to_agent | hard_fail | retry_once
   # side_effects: []
 
+  # Optional semantic preconditions — run after schema validation, before script.
+  # Available checks: file_exists, file_is_text, non_empty, valid_regex,
+  # valid_iso_date, is_unit_length, is_unit_mass, is_unit_temp, is_unit_any.
+  # semantic_preconditions:
+  #   - { check: file_exists, arg: path }
+
   examples:
     - input: {{}}
       output: {{}}
