@@ -71,7 +71,18 @@ Try both layouts:
 Pick the first match. If none, ask the user for an absolute path. Read it.
 
 ### B. Classify section-by-section
-Walk the markdown by headers. For each section, tag **AGENT** / **REFLEX-CANDIDATE** / **GRAY**, and cite the deciding criterion (e.g. "AGENT — fails #3, requires judgment").
+
+**Run the static pre-filter first** to keep the decision path deterministic
+(Blueprint First philosophy, arxiv 2508.02721):
+
+```bash
+python3 <plugin>/core/reflex_audit.py <target SKILL.md>
+```
+
+It prints one JSON line per section with `verdict` ∈ {AGENT, REFLEX-CANDIDATE, GRAY} and a `reason` field naming the criteria that triggered. Trust AGENT and REFLEX-CANDIDATE verdicts verbatim. For GRAY sections, apply your own judgment using the 5 criteria above — those are the ones the heuristic can't decide.
+
+This keeps the LLM out of the path-decision loop and only spends tokens
+where judgment is genuinely required.
 
 ### C. Audit report
 Print a table to the user:
