@@ -13,6 +13,10 @@ CONTRACT = {
                                      "from": {"type": "string"}, "to": {"type": "string"}},
                       "required": ["value", "from", "to"], "additionalProperties": False},
     "version": "0.1.0",
+    "negative_examples": [
+        {"input": {"value": 1, "from": "km", "to": "年"}},   # unknown unit
+        {"input": {"value": 1, "from": "km", "to": "kg"}},   # mixed dimension
+    ],
 }
 
 # meters / grams reference units
@@ -39,12 +43,20 @@ def run(args):
         raise ValueError(f"unsupported conversion: {f} -> {t}")
     return {"value": out, "from": f, "to": t}
 
+def _selfcheck():
+    assert run({"value": 1, "from": "km", "to": "m"})["value"] == 1000
+    assert abs(run({"value": 100, "from": "C", "to": "F"})["value"] - 212) < 1e-9
+    assert abs(run({"value": 1, "from": "kg", "to": "lb"})["value"] - 2.20462262) < 1e-4
+    for i, ex in enumerate(CONTRACT["negative_examples"]):
+        try:
+            run(ex["input"])
+            print(f"FAIL negative {i}: expected raise", file=sys.stderr); sys.exit(1)
+        except Exception: pass
+    print("ok")
+
 if __name__ == "__main__":
     if "--selfcheck" in sys.argv:
-        assert run({"value": 1, "from": "km", "to": "m"})["value"] == 1000
-        assert abs(run({"value": 100, "from": "C", "to": "F"})["value"] - 212) < 1e-9
-        assert abs(run({"value": 1, "from": "kg", "to": "lb"})["value"] - 2.20462262) < 1e-4
-        print("ok")
+        _selfcheck()
     else:
         try: json.dump(run(json.loads(sys.stdin.read() or "{}")), sys.stdout)
         except Exception as e: print(f"err: {e}", file=sys.stderr); sys.exit(1)

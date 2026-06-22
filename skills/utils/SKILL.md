@@ -49,6 +49,9 @@ reflexes:
     examples:
       - input:  { path: "/etc/hostname", algo: "sha256" }
         output: { hash: "*", algo: "sha256", bytes: 0 }   # selfcheck stubbed below
+    negative_examples:
+      - input: { path: "/definitely/does/not/exist/xyz", algo: "sha256" }
+      - input: { path: "/etc/hostname", algo: "crc32" }   # algo not in enum bypassed in this list; semantic check inside run()
 
   - reflex_id: count-lines
     source_skill_id: utils
@@ -73,6 +76,8 @@ reflexes:
     examples:
       - input:  { path: "/etc/hostname" }
         output: { lines: 0, bytes: 0 }
+    negative_examples:
+      - input: { path: "/definitely/does/not/exist/xyz" }
 
   - reflex_id: b64-encode
     source_skill_id: utils
@@ -119,6 +124,8 @@ reflexes:
     examples:
       - input:  { b64: "aGVsbG8=" }
         output: { text: "hello" }
+    negative_examples:
+      - input: { b64: "this is not valid base64 !!!" }
 
   - reflex_id: json-path
     source_skill_id: utils
@@ -143,6 +150,9 @@ reflexes:
     examples:
       - input:  { json: '{"a":{"b":[10,20]}}', path: "a.b[1]" }
         output: { value: 20 }
+    negative_examples:
+      - input: { json: "not json at all", path: "a.b" }
+      - input: { json: '{"a":1}', path: "missing.key" }
 
   - reflex_id: regex-extract
     source_skill_id: utils
@@ -170,6 +180,8 @@ reflexes:
     examples:
       - input:  { text: "a1 b22 c333", pattern: "\\d+" }
         output: { matches: ["1", "22", "333"] }
+    negative_examples:
+      - input: { text: "x", pattern: "[invalid" }
 
   - reflex_id: date-add
     source_skill_id: utils
@@ -196,6 +208,8 @@ reflexes:
     examples:
       - input:  { date: "2026-01-01", days: 30 }
         output: { date: "2026-01-31" }
+    negative_examples:
+      - input: { date: "not a date", days: 1 }
 
   - reflex_id: unit-convert
     source_skill_id: utils
@@ -223,6 +237,9 @@ reflexes:
     examples:
       - input:  { value: 1, from: "km", to: "m" }
         output: { value: 1000, from: "km", to: "m" }
+    negative_examples:
+      - input: { value: 1, from: "km", to: "年" }       # unknown unit
+      - input: { value: 1, from: "km", to: "kg" }        # mixed dimension
 ---
 
 # utils

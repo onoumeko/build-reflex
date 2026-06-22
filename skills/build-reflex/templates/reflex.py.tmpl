@@ -23,12 +23,13 @@ except ImportError:  # graceful degrade — script still runs, just no output ch
 
 # --- contract snapshot, kept in sync with SKILL.md `reflex:` block ---
 CONTRACT = {{
-    "reflex_id":       "{reflex_id}",
-    "source_skill_id": "{source_skill_id}",
-    "version":         "{version}",
-    "input_schema":    {input_schema_json},
-    "output_schema":   {output_schema_json},
-    "examples":        {examples_json},
+    "reflex_id":         "{reflex_id}",
+    "source_skill_id":   "{source_skill_id}",
+    "version":           "{version}",
+    "input_schema":      {input_schema_json},
+    "output_schema":     {output_schema_json},
+    "examples":          {examples_json},
+    "negative_examples": {negative_examples_json},
 }}
 
 
@@ -46,7 +47,7 @@ def _main():
 
 def _selfcheck():
     failures = 0
-    for i, ex in enumerate(CONTRACT["examples"]):
+    for i, ex in enumerate(CONTRACT.get("examples", [])):
         try:
             got = run(ex["input"])
             validate(got, CONTRACT["output_schema"])
@@ -56,6 +57,13 @@ def _selfcheck():
         except Exception as e:
             print(f"FAIL example {{i}}: {{type(e).__name__}}: {{e}}", file=sys.stderr)
             failures += 1
+    for i, ex in enumerate(CONTRACT.get("negative_examples", [])):
+        try:
+            got = run(ex["input"])
+            print(f"FAIL negative {{i}}: expected raise, got {{got!r}}", file=sys.stderr)
+            failures += 1
+        except Exception:
+            pass  # expected — negative examples should raise
     if failures == 0:
         print("ok")
         sys.exit(0)

@@ -28,3 +28,10 @@ reflex:
   examples:
     - input: {{}}
       output: {{}}
+
+  # negative_examples drive the second half of --selfcheck: inputs that LOOK
+  # routable (schema passes) but should NOT be handled by this reflex — e.g.
+  # nonexistent files, unsupported units, malformed dates. run() must raise.
+  # Required by build-reflex v0.2+ to catch semantic misuse (per arxiv 2603.13404).
+  negative_examples:
+    - input: {{}}    # describe and replace

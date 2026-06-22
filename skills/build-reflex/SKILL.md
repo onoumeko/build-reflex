@@ -127,6 +127,11 @@ reflex:
   examples:                        # required, >=1; drives --selfcheck
     - input:  { ... }
       output: { ... }
+
+  negative_examples:               # required v0.2+, >=1; inputs that pass schema
+                                   # but should be REJECTED (semantic misuse).
+                                   # run() must raise. Drives second half of --selfcheck.
+    - input:  { ... }              # e.g. {path: "/nonexistent"}, {from: "km", to: "年"}
 ```
 
 Supported schema keywords (intentional subset): `type`, `properties`,
