@@ -2,12 +2,27 @@
 name: utils
 displayName: utils (starter reflex pack)
 description: >
-  Zero-config deterministic helpers — file hash/line count, base64 en/decode,
-  json-path query, regex extract, date arithmetic, unit conversion. All exposed
-  as reflexes routed by input_schema; the LLM never runs these. Triggers:
-  "hash this file", "count lines in", "base64 encode/decode", "extract from
-  json", "extract regex matches", "add N days to date", "convert N <unit>".
+  Deterministic helpers (LLM never runs these; the hook routes by input_schema
+  and returns script output directly). Available reflexes:
+  file-hash {path, algo} → {hash, algo, bytes};
+  count-lines {path} → {lines, bytes};
+  b64-encode {text} → {b64};
+  b64-decode {b64} → {text};
+  json-path {json, path} → {value};
+  regex-extract {text, pattern, group?} → {matches};
+  date-add {date, days?, hours?, minutes?} → {date};
+  unit-convert {value, from, to} → {value, from, to}.
+  Triggers: hash/count lines/base64/json-path/regex/date-add/convert.
 license: MIT
+reflex_index:
+  - "file-hash {path, algo} → {hash, algo, bytes}"
+  - "count-lines {path} → {lines, bytes}"
+  - "b64-encode {text} → {b64}"
+  - "b64-decode {b64} → {text}"
+  - "json-path {json, path} → {value}"
+  - "regex-extract {text, pattern, group?} → {matches}"
+  - "date-add {date, days?, hours?, minutes?} → {date}"
+  - "unit-convert {value, from, to} → {value, from, to}"
 reflexes:
   - reflex_id: file-hash
     source_skill_id: utils
