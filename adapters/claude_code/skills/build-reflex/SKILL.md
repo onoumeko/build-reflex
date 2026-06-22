@@ -123,6 +123,9 @@ reflex:
   timeout_seconds: 10              # optional, default 10 — enforced via subprocess
   determinism: pure                # required: pure | external_api | impure
   on_failure: fallback_to_agent    # optional, default. Alt: hard_fail | retry_once
+  post_process: raw                # optional, default raw. raw = stdout as tool result
+                                   # (block, LLM never sees call). wrap_with_llm = inject
+                                   # stdout as additionalContext, LLM wraps in narrative.
   side_effects: []                 # optional advisory list, e.g. ["writes /tmp"]
 
   semantic_preconditions:          # optional, v0.3+. Checks run AFTER schema-validate,
