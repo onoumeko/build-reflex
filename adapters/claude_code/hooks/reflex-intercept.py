@@ -28,9 +28,10 @@ from glob import glob
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "core"))
-import reflex_common  # noqa: E402
-import reflex_cache   # noqa: E402
-import reflex_drift   # noqa: E402
+import reflex_common    # noqa: E402
+import reflex_cache     # noqa: E402
+import reflex_drift     # noqa: E402
+import reflex_semantic  # noqa: E402
 
 try:
     import yaml
@@ -204,6 +205,12 @@ def main():
     if drift:
         log({"skill": skill, "reflex_id": reflex_id, "status": "drift", "err": drift})
         let_through(reminder=f"reflex {reflex_id} not invoked: {drift}. Regenerate via build-reflex.")
+
+    # 3.5. Semantic preconditions
+    pre_err = reflex_semantic.evaluate(reflex.get("semantic_preconditions"), args)
+    if pre_err:
+        log({"skill": skill, "reflex_id": reflex_id, "status": "semantic_miss", "err": pre_err})
+        let_through(reminder=f"reflex {reflex_id}: {pre_err} — falling back to LLM.")
 
     timeout = int(reflex.get("timeout_seconds") or 10)
     on_failure = reflex.get("on_failure") or "fallback_to_agent"
