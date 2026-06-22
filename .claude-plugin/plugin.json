@@ -2,5 +2,7 @@
   "name": "build-reflex",
   "version": "0.1.0",
   "description": "Convert deterministic skill work into Python reflexes invoked by a PreToolUse hook — saves tokens by skipping the LLM for closed-schema, judgment-free skill calls.",
-  "license": "MIT"
+  "license": "MIT",
+  "skills": "./adapters/claude_code/skills/",
+  "hooks": "./adapters/claude_code/hooks/hooks.json"
 }
