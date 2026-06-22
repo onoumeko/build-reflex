@@ -46,6 +46,8 @@ reflexes:
     timeout_seconds: 30
     determinism: pure
     on_failure: fallback_to_agent
+    semantic_preconditions:
+      - { check: file_exists, arg: path }
     examples:
       - input:  { path: "/etc/hostname", algo: "sha256" }
         output: { hash: "*", algo: "sha256", bytes: 0 }   # selfcheck stubbed below
@@ -73,6 +75,8 @@ reflexes:
     timeout_seconds: 10
     determinism: pure
     on_failure: fallback_to_agent
+    semantic_preconditions:
+      - { check: file_is_text, arg: path }
     examples:
       - input:  { path: "/etc/hostname" }
         output: { lines: 0, bytes: 0 }
@@ -177,6 +181,8 @@ reflexes:
     timeout_seconds: 5
     determinism: pure
     on_failure: fallback_to_agent
+    semantic_preconditions:
+      - { check: valid_regex, arg: pattern }
     examples:
       - input:  { text: "a1 b22 c333", pattern: "\\d+" }
         output: { matches: ["1", "22", "333"] }
@@ -205,6 +211,8 @@ reflexes:
     timeout_seconds: 5
     determinism: pure
     on_failure: fallback_to_agent
+    semantic_preconditions:
+      - { check: valid_iso_date, arg: date }
     examples:
       - input:  { date: "2026-01-01", days: 30 }
         output: { date: "2026-01-31" }
@@ -234,6 +242,9 @@ reflexes:
     timeout_seconds: 5
     determinism: pure
     on_failure: fallback_to_agent
+    semantic_preconditions:
+      - { check: is_unit_any, arg: from }
+      - { check: is_unit_any, arg: to }
     examples:
       - input:  { value: 1, from: "km", to: "m" }
         output: { value: 1000, from: "km", to: "m" }
