@@ -19,6 +19,28 @@ The original pitch is "save tokens," but the real wins are:
 
 Pure reflexes get a transparent on-disk LRU cache. Identical calls become free.
 
+## Validated by research
+
+The "deterministic execution, LLM only for bounded sub-tasks" pattern is backed
+by independent academic work:
+
+- **Blueprint First, Model Second** ([arxiv 2508.02721](https://arxiv.org/abs/2508.02721))
+  — On the same Claude Sonnet 4 backbone, *Source Code Agent* (the same idea:
+  codify workflow as a deterministic blueprint, invoke LLM as a tool, never let
+  it decide the path) achieved **+97.6% final pass rate**, **-96% constraint
+  violations** (11 vs 275), and **-27% execution steps** (10.2 vs 14.0) on
+  TravelPlanner. Results transferred to production incident-diagnosis
+  deployments.
+- **Schema First Tool APIs** ([arxiv 2603.13404](https://arxiv.org/abs/2603.13404))
+  — A controlled study confirming that JSON Schema contracts improve tool
+  interface adherence, while identifying semantic misuse and timeout-sensitive
+  tasks as the remaining bottlenecks. build-reflex's `semantic_preconditions`
+  and `negative_examples` fields are designed to address exactly these gaps.
+
+build-reflex is an open-source implementation of the same principle —
+deterministic contracts, agent-free execution, zero tokens for work that
+doesn't need a model.
+
 ## Install
 
 This is a local marketplace. Add it to `~/.claude/settings.json`:
