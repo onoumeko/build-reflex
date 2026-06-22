@@ -20,6 +20,7 @@ Supports:
   - One-line JSON log per call to /tmp/reflex-intercept.log for stats.
 """
 import json
+import os
 import subprocess
 import sys
 import time
@@ -38,7 +39,17 @@ except ImportError:
     sys.exit(0)
 
 LOG = "/tmp/reflex-intercept.log"
+MAX_LOG_BYTES = 5 * 1024 * 1024  # 5 MB
 SKILL_GLOB = "/root/.claude/plugins/cache/*/*/*/skills/{skill}/SKILL.md"
+
+
+def _rotate_log():
+    try:
+        st = os.stat(LOG)
+        if st.st_size > MAX_LOG_BYTES:
+            os.rename(LOG, LOG + ".1")
+    except OSError:
+        pass
 
 
 def let_through(reminder=None):
@@ -67,6 +78,7 @@ def intercept(body):
 
 def log(event):
     event["t"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+    _rotate_log()
     try:
         with open(LOG, "a") as f:
             f.write(json.dumps(event, separators=(",", ":")) + "\n")
