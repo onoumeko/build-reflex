@@ -123,20 +123,7 @@ reflex:
   timeout_seconds: 10              # optional, default 10 — enforced via subprocess
   determinism: pure                # required: pure | external_api | impure
   on_failure: fallback_to_agent    # optional, default. Alt: hard_fail | retry_once
-  post_process: raw                # optional, default raw. raw = stdout as tool result
-                                   # (block, LLM never sees call). wrap_with_llm = inject
-                                   # stdout as additionalContext, LLM wraps in narrative.
   side_effects: []                 # optional advisory list, e.g. ["writes /tmp"]
-
-  semantic_preconditions:          # optional, v0.3+. Checks run AFTER schema-validate,
-                                   # BEFORE invoking script. Failure → fallback_to_agent
-                                   # with precise reason. Catches semantic misuse that
-                                   # schemas can't (arxiv 2603.13404).
-                                   # Available checks: file_exists, file_is_text,
-                                   # non_empty, valid_regex, valid_iso_date,
-                                   # is_unit_length, is_unit_mass, is_unit_temp,
-                                   # is_unit_any.
-    - { check: file_exists, arg: path }
 
   examples:                        # required, >=1; drives --selfcheck
     - input:  { ... }
