@@ -64,11 +64,8 @@ Higher hit rate, fewer schema misses.
 ## Workflow when invoked on `<target-skill>`
 
 ### A. Locate
-Try both layouts:
-  - `/root/.claude/plugins/cache/*/*/*/skills/<target>/SKILL.md`
-  - `/root/.claude/plugins/cache/*/*/*/adapters/*/skills/<target>/SKILL.md`
-
-Pick the first match. If none, ask the user for an absolute path. Read it.
+Glob `/root/.claude/plugins/cache/*/*/*/skills/<target-skill>/SKILL.md`. If
+none found, ask the user for the absolute path. Read it.
 
 ### B. Classify section-by-section
 Walk the markdown by headers. For each section, tag **AGENT** / **REFLEX-CANDIDATE** / **GRAY**, and cite the deciding criterion (e.g. "AGENT — fails #3, requires judgment").
@@ -94,16 +91,7 @@ GRAY items also need explicit confirmation, with the failing criterion called ou
 0. **Lint first.** Run `python3 <plugin>/core/reflex_lint.py <target SKILL.md>` to ensure no two reflexes have identical required-field signatures. The hook routes by "first input_schema match wins"; overlap = silent wrong dispatch. If lint reports OVERLAP, add a `required` discriminator field to one of the conflicting reflexes before generating.
 1. Render `reflex:` YAML from `../../../../spec/templates/reflex_block.yaml.tmpl`. Fill every required field; omit unused optionals rather than write `null`.
 2. Render `<reflex_id>.py` from `../../../../spec/templates/reflex.py.tmpl` with `CONTRACT` populated and a `run(args)` stub that raises `NotImplementedError`. (Implementation is a follow-up; never silently fake it.)
-3. **Patch the target SKILL.md frontmatter** using `core/reflex_patch.py`:
-   ```python
-   from reflex_patch import has_reflex_block, inject_reflex_block
-   if has_reflex_block(path):
-       # refuse and ask user — do not overwrite
-   err = inject_reflex_block(path, reflex_yaml_string)
-   if err:
-       # report error to user
-   ```
-   Expect two things to go wrong here: (a) a prior `reflex:` or `reflexes:` block already exists — the function refuses, ask the user. (b) the frontmatter's closing `---` is ambiguous (e.g. inside a code block) — the function returns an error, report it.
+3. **Patch the target SKILL.md frontmatter** — insert the `reflex:` block before the closing `---`. Do not touch the body. If frontmatter already has a `reflex:` block, **refuse and ask the user** — do not overwrite.
 4. If you implemented `run()` (rather than leaving a stub), run `python3 <skill_dir>/<reflex_id>.py --selfcheck`. Report ok / fail. On fail, keep the file but warn the user that the implementation is broken.
 
 ## Hard constraints
@@ -135,20 +123,7 @@ reflex:
   timeout_seconds: 10              # optional, default 10 — enforced via subprocess
   determinism: pure                # required: pure | external_api | impure
   on_failure: fallback_to_agent    # optional, default. Alt: hard_fail | retry_once
-  post_process: raw                # optional, default raw. raw = stdout as tool result
-                                   # (block, LLM never sees call). wrap_with_llm = inject
-                                   # stdout as additionalContext, LLM wraps in narrative.
   side_effects: []                 # optional advisory list, e.g. ["writes /tmp"]
-
-  semantic_preconditions:          # optional, v0.3+. Checks run AFTER schema-validate,
-                                   # BEFORE invoking script. Failure → fallback_to_agent
-                                   # with precise reason. Catches semantic misuse that
-                                   # schemas can't (arxiv 2603.13404).
-                                   # Available checks: file_exists, file_is_text,
-                                   # non_empty, valid_regex, valid_iso_date,
-                                   # is_unit_length, is_unit_mass, is_unit_temp,
-                                   # is_unit_any.
-    - { check: file_exists, arg: path }
 
   examples:                        # required, >=1; drives --selfcheck
     - input:  { ... }
