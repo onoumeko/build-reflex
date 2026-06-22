@@ -23,16 +23,7 @@ reflex:
   timeout_seconds: 10
   determinism: pure            # pure | external_api | impure
   on_failure: fallback_to_agent  # fallback_to_agent | hard_fail | retry_once
-  # post_process: raw          # raw | wrap_with_llm
-                               # raw = stdout becomes tool result, LLM never sees call.
-                               # wrap_with_llm = inject stdout into LLM context for narrative wrapping.
   # side_effects: []
-
-  # Optional semantic preconditions — run after schema validation, before script.
-  # Available checks: file_exists, file_is_text, non_empty, valid_regex,
-  # valid_iso_date, is_unit_length, is_unit_mass, is_unit_temp, is_unit_any.
-  # semantic_preconditions:
-  #   - { check: file_exists, arg: path }
 
   examples:
     - input: {{}}
