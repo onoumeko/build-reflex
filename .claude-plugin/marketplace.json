@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "build-reflex",
+  "description": "Convert deterministic skill work into Python reflexes invoked by a PreToolUse hook — saves tokens by skipping the LLM for closed-schema, judgment-free skill calls.",
+  "owner": { "name": "local" },
+  "plugins": [
+    {
+      "name": "build-reflex",
+      "description": "Audit skills for deterministic work and scaffold reflex scripts; PreToolUse hook intercepts and runs them.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
