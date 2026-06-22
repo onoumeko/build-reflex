@@ -1,0 +1,37 @@
+# Reflex contract block. Insert into target SKILL.md frontmatter, above the
+# closing `---`. Fill placeholders. Omit optional keys instead of writing null.
+reflex:
+  reflex_id: {reflex_id}
+  source_skill_id: {source_skill_id}
+  version: "{version}"
+  contract_version: "1"
+
+  input_schema:
+    type: object
+    properties:
+      # field: { type: string }
+    required: []
+    additionalProperties: false
+
+  output_schema:
+    type: object
+    properties:
+      # field: { type: string }
+    required: []
+    additionalProperties: false
+
+  timeout_seconds: 10
+  determinism: pure            # pure | external_api | impure
+  on_failure: fallback_to_agent  # fallback_to_agent | hard_fail | retry_once
+  # side_effects: []
+
+  examples:
+    - input: {{}}
+      output: {{}}
+
+  # negative_examples drive the second half of --selfcheck: inputs that LOOK
+  # routable (schema passes) but should NOT be handled by this reflex — e.g.
+  # nonexistent files, unsupported units, malformed dates. run() must raise.
+  # Required by build-reflex v0.2+ to catch semantic misuse (per arxiv 2603.13404).
+  negative_examples:
+    - input: {{}}    # describe and replace
