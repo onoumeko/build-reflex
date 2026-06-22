@@ -29,7 +29,7 @@ This is a local marketplace. Add it to `~/.claude/settings.json`:
     "build-reflex": {
       "source": {
         "source": "github",
-        "repo": "<your-user>/build-reflex"
+        "repo": "onoumeko/build-reflex"
       }
     }
   },
