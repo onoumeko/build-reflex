@@ -70,15 +70,14 @@ Restart Claude Code. The hook auto-registers; the bundled skills appear.
 | **`utils`** | 8 zero-config reflexes — `file-hash`, `count-lines`, `b64-encode/decode`, `json-path`, `regex-extract`, `date-add`, `unit-convert`. Routed by input schema. |
 | **`build-reflex`** | Audit one of your other skills, classify each section, scaffold reflex contract + `.py` stub. Per-candidate approval — never auto-decides boundaries. |
 | **`reflex-stats`** | `/reflex-stats` — hits, fallback rate, estimated tokens & latency saved, top reflexes. |
+| **`reflex-suggest`** | `/reflex-suggest` — reverse audit: which skills are burning tokens that scripts could save. |
 
-Hook + runtime:
+Architecture:
 
 ```
-hooks/reflex-intercept.py     The interceptor
-lib/reflex_common.py          ~80-line JSON Schema subset validator (stdlib)
-lib/reflex_cache.py           SQLite-backed LRU cache for pure reflexes
-lib/reflex_drift.py           Refuses to run when SKILL.md and .py CONTRACT disagree
-lib/reflex_stats.py           Aggregates /tmp/reflex-intercept.log
+spec/                         Reflex contract spec (v1) + templates
+core/                         Runtime — validator, cache, drift, lint, stats, suggest
+adapters/claude_code/         Claude Code hook + skills
 ```
 
 All stdlib + PyYAML. No `pip install` needed.
